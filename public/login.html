@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <title>login.html</title>
+
+    <script src="https://kit.fontawesome.com/a69b738345.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.20/b-1.6.1/b-html5-1.6.1/r-2.2.3/sc-2.0.1/sl-1.3.1/datatables.min.css"/>
+
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-app.js"></script>
+    <!-- Authentication script -->
+    <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-auth.js"></script>
+    <!-- Database script -->
+    <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-database.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyBy6MDHL6J9fJ9izamoDDc1KF2GFa7NjwI",
+        authDomain: "midtermproject-8c3e5.firebaseapp.com",
+        databaseURL: "https://midtermproject-8c3e5.firebaseio.com",
+        projectId: "midtermproject-8c3e5",
+        storageBucket: "midtermproject-8c3e5.appspot.com",
+        messagingSenderId: "972794493",
+        appId: "1:972794493:web:3e84299faeaa9b0bd1df14"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // variable auth added
+    var auth = firebase.auth();
+    // variable database added
+    var db = firebase.database();
+    // setting ref - assigned to user id later
+    var myRef;
+    </script>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand"><i class="fas fa-hammer"></i> Bookmark Manager by Dorukan Özercan - 1506539</a>
+    </nav>
+    
+    <div class="container">
+
+        <!-- showing account information -->
+        <div class="row mt-3 justify-content-center">
+            <div class="col-6 text-center">
+                <div class="alert alert-success">
+                    <b>Account: <span id="account"></span></b>
+                </div>
+            </div>
+            <div class="col-2">
+                <button id="logOut" class="btn btn-danger btn-lg btn-block"><i class="fas fa-sign-out-alt"></i> LOG OUT</button>
+            </div>
+        </div>
+
+        <!-- adding text to database input
+        <div class="row mt-1 justify-content-center">
+            <div class="col-4 text-center">
+                <input id="txtInsert" type="text" class="form-control form-control-lg">
+            </div>
+        </div>
+        -->
+
+        <div class="row mt-3 justify-content-center">
+            <div class="col-8 text-center">
+                <button id="btnAdd" class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#exampleModal"><i class="far fa-plus-square"></i> ADD BOOKMARK</button>
+            </div>
+        </div>
+
+        <!--
+        <div class="row mt-3 justify-content-center">
+            <div class="col-8 text-center">
+                <button id="btnRemove" class="btn btn-danger btn-lg btn-block">REMOVE BOOKMARK</button>
+            </div>
+        </div>
+        -->
+
+        <div class="row mt-3 justify-content-center">
+            <div class="col-8 text-center">
+                <div data-toggle="buttons">
+                    <label id="btnRemove" class="btn btn-danger btn-lg btn-block active">
+                        <input type="checkbox" name="btnRemove" class="cb-checkbox"> 
+                            <span id="txtRemove"><i class="far fa-trash-alt"></i> REMOVE BOOKMARK</span> 
+                    </label>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row mt-3 justify-content-center">
+            <div class="col-8 text-center">
+                <div id="alertRemove" class="text-center alert alert-warning" style="display: none;">
+                    Click bookmarks you want to delete. When finished, click Quit Editing.
+                </div>
+            </div>
+        </div>
+        
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Bookmark</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    Bookmark Name:
+                    <input id="txtName" type="text" class="form-control form-control-lg mt-1 mb-3">
+                    Website URL:
+                    <div class="input-group input-group-lg">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="inputGroup-sizing-lg">https://</span>
+                        </div>
+                        <input id="txtWeb" type="text" class="form-control" aria-label="https://" aria-describedby="inputGroup-sizing-sm">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="addBookmark" type="button" class="btn btn-primary" data-dismiss="modal">Add Bookmark</button>
+                </div>
+            </div>
+            </div>
+        </div>
+
+
+        <!-- showing database content to user -->
+        <div class="row mt-3 justify-content-center">
+            <div class="col-8 text-center">
+                <div>
+                    <div id="alertBookmark" class="alert alert-info" style="margin-top: 50px; padding: 120px;">You added no bookmarks. Use button "Add Bookmark".</div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    
+    <div class="container-fluid">
+        <div id="showBookmark" class="row mt-3 text-center justify-content-center">
+            <!-- BOOKMARKS HOLDER AREA -->
+        </div>
+    </div>
+
+
+
+    <div id='loading' class='text-center' style='color:white;font-size:100px;display:none;position: absolute;left:0;right:0;top:0;bottom:0;z-index:1000;background:rgba(0,0,0,0.8);padding:100px'>
+         <!-- LOADING TRANSPARENT DIV -- if gif doesnt work try alternative hosting... -->
+         <!-- <img src="https://i.imgur.com/L7dfvLE.gif" style="height: 50px; width: 50px;"> -->
+         <img src="https://i.ibb.co/v1ssRqY/L7dfvLE.gif" style="height: 50px; width: 50px;">
+
+    </div>
+
+
+</body>
+</html>
+
+<script>
+
+    // AUTH -------- 
+
+    // get user's login information
+    firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+        console.log(user.email);
+        $("#account").text(user.email);
+
+        // user's specific user id
+        var userID = user.uid;
+
+        // using ref as userID from AUTH
+        // assigning ref to user id to show only own user data to user
+        // for Add Category change this to category name - extra below this
+        myRef = db.ref(userID);
+
+
+
+        // shows specific bookmarks for each user
+        myRef.on('value', function(allBookmarks)
+        {
+            
+            allBookmarks.forEach(function(itemRecord)
+            {
+                var recKey = itemRecord.key;
+                var itemData = itemRecord.val();
+                var bookmark_name = itemData.bookmarkName;
+                var bookmark_url = itemData.bookmarkUrl;
+                console.log("Unique Key: " + recKey + " --> bookmarkName: " + bookmark_name + " --> bookmarkUrl: " + bookmark_url);
+            
+                
+                var bookmarks = [
+                    { name : bookmark_name, urlOfBookmark: bookmark_url }
+                ];
+
+                $("#addBookmark").click(function ()
+                {
+                    bookmarks.push(bookmark_name, bookmark_url);
+                });
+
+
+                for (var i = 0; i < bookmarks.length; i++) {
+                    console.log("new bookmark: " + bookmarks[i].name + "last added elemenent: " + bookmarks[bookmarks.length - 1].name);
+
+                    var x = 
+                    '<div class="col-auto mt-3 mb-1 text-center">'+
+                        '<div id="remove" class="card p-3" style="width: 300px; height: 150px;">' +
+                            '<div class="card-header">' + 
+                                'Bookmark Name: ' + '<span id="test">' + bookmarks[bookmarks.length - 1].name + '</span>' + '<br>' +
+                            '</div>' +
+                            '<div class="card-body">' +
+                                'Bookmark URL: <br>' + bookmarks[bookmarks.length - 1].urlOfBookmark +
+                                '<a href="'+ bookmark_url + '" ' + 'class="stretched-link"></a>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+        
+                    x += "</div>";
+
+                    $("#showBookmark").append(x);
+                    
+
+                }
+
+                // if bookmarks array empty or does not exist show alert else hide alert
+                if (bookmarks === undefined || bookmarks.length == 0) {
+                    return;
+                } else {
+                    $("#alertBookmark").hide();
+                }
+
+
+                
+            })
+            
+        });
+
+
+    } else {
+        // No user is signed in.
+    }
+    });
+
+
+
+
+    // Logging out when Log Out button pressed
+    $("#logOut").click(function()
+    {
+        firebase.auth().signOut().then(function() {
+            var c = confirm("Log Out?");
+            if (c == true)
+            {
+                location.href = "index.html";
+            }
+            
+        }).catch(function(error) {
+            console.log(error);
+        });
+    });
+
+    
+    // DATABASE --------
+    
+    $("#addBookmark").click(function ()
+    {
+        var obj = { bookmarkName : $("#txtName").val(), bookmarkUrl : "https://" + $("#txtWeb").val() };
+        myRef.push().set(obj);
+        $("#txtName").val("");
+        $("#txtWeb").val("");
+        location.reload(); // Please wait -- reloading the page to retrieve data
+    });
+
+    $(document).ready(function(){
+        $("#loading").fadeIn();
+
+        setTimeout(function()
+        {
+            $("#loading").fadeOut();
+        }, 1000 );
+    })
+
+
+    // activating use of modal
+    $('#myModal').on('shown.bs.modal', function () {
+        $('#myInput').trigger('focus')
+    })
+
+
+    // DELETING
+    // if checkbox is checked can do below otherwise return
+    // removes div elements 
+    $("#showBookmark").on("click", "#remove", function (e) {
+        if ($(".cb-checkbox").is(':checked')) {
+            $(this).parent('div').remove();
+            e.preventDefault(); // cancels redirecting
+            
+            // remove from database -- original
+            //db.ref().set(null);
+
+            var user = firebase.auth().currentUser;
+            var userID = user.uid;
+
+            //db.ref(userID).set(null);
+
+            //myRef = db.ref(userID);
+            //console.log(myRef);
+
+            //added last
+            var userID = user.uid;
+            myRef = db.ref(userID);
+
+
+            myRef.on('value', function(allBookmarks){
+                allBookmarks.forEach(function(itemRecord){
+                    var recKey = itemRecord.key; // key
+                    var itemDatas = itemRecord.val();
+                    var bookmark_names = itemDatas.bookmarkName; // bookmarkname from database
+                    console.log("Unique Key::::::" + " " + recKey);
+
+                    console.log("Bookmark Name:::: " + bookmark_names);
+
+
+                    /* name yerine clicked items name ??
+                    if (bookmark_names == "name") {
+                        myRef.child(recKey).set(null);
+                        return;
+                    }
+                    */
+                    
+                })
+
+            })
+
+        }
+    });
+
+
+
+    // changed checked button
+    $('[data-toggle="buttons"] .btn').on('click', function () {
+        // toggle style
+        $(this).toggleClass('btn-warning btn-danger active');
+        
+        // toggle checkbox
+        var $chk = $(this).find('[type=checkbox]');
+        $chk.prop('checked',!$chk.prop('checked'));
+        return false;
+    });
+
+
+    // when button remove clicked
+    $("#btnRemove").click(function() {
+        if ($(".cb-checkbox").is(':checked')) {
+            $("#alertRemove").slideDown();
+            var y = '<i class="fas fa-feather-alt"></i>';
+            $("#txtRemove").text(" QUIT EDITING");
+            $("#txtRemove").prepend(y);
+
+        } else {
+            $("#alertRemove").slideUp();
+            var x = '<i class="far fa-trash-alt"></i>';
+            $("#txtRemove").text(" REMOVE BOOKMARK");
+            $("#txtRemove").prepend(x);
+        }
+    });
+
+
+</script>
+
+
+
+<style>
+    .card:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .cb-checkbox {
+    visibility: hidden;
+}
+</style>

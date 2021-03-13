@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <title>Login Page</title>
+
+    <script src="https://kit.fontawesome.com/a69b738345.js" crossorigin="anonymous"></script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-app.js"></script>
+    <!-- Authentication script -->
+    <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-auth.js"></script>
+    <!-- Database script -->
+    <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-database.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyBy6MDHL6J9fJ9izamoDDc1KF2GFa7NjwI",
+        authDomain: "midtermproject-8c3e5.firebaseapp.com",
+        databaseURL: "https://midtermproject-8c3e5.firebaseio.com",
+        projectId: "midtermproject-8c3e5",
+        storageBucket: "midtermproject-8c3e5.appspot.com",
+        messagingSenderId: "972794493",
+        appId: "1:972794493:web:3e84299faeaa9b0bd1df14"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // variable auth added
+    var auth = firebase.auth();
+    // variable database added
+    var db = firebase.database();
+
+    </script>
+
+</head>
+    <!-- ALL BUTTONS ARE FUNCTIONAL IN SINGLE CARD :)
+    COP4436 - MIDTERM PROJECT BY DORUKAN OZERCAN - 1506539 
+    THIS IS THE MAIN PAGE WHEN USER ENTERS THE WEBSITE
+    WHEN USER LOGS IN, THEY ARE REDIRECTED TO INDEX.HTML -->
+<body>
+    <div class="container">
+
+        <div class="row mt-3 justify-content-center text-center">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-light">
+                        <b>ALL BUTTONS ARE FUNCTIONAL IN SINGLE CARD <br>
+                        COP4466 - MIDTERM PROJECT BY DORUKAN ÖZERCAN - 1506539</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-3 justify-content-center">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header bg-dark text-light"><i class="fas fa-sign-in-alt"></i><b> LOGIN</b></div>
+                    <div class="card-body">
+                        <i class="fas fa-user"></i> E-mail:
+                        <input id="txtUn" type="text" class="form-control mt-1 mb-3">
+                        <i class="fas fa-key"></i> Password:
+                        <input id="txtPw" type="password" class="form-control mt-1">
+                    </div>
+                    <div class="card-footer text-right">
+                        <button id="btnLogin" class="btn btn-success"><i class="fas fa-door-open"></i> Log in</button>
+                        <button id="btnReset" class="btn btn-danger"><i class="fas fa-spinner"></i> Reset Password</button>
+                        <button id="btnRegister" class="btn btn-info"><i class="fas fa-user-plus"></i> Register</button>
+                    </div>
+                </div>
+
+
+            <div id="registerSuccess" class="mt-3 text-center alert alert-success" style="display: none;">
+                Successfully Registered
+            </div>
+            <div id="loggedIn" class="mt-3 text-center alert alert-success" style="display: none;">
+                Logged in. Please wait.
+            </div>
+            <div id="mailNotValid" class="mt-3 text-center alert alert-danger" style="display: none;">
+                Email is not valid. Couldn't register.
+            </div>
+            <div id="mailNotValidLogin" class="mt-3 text-center alert alert-danger" style="display: none;">
+                Email is not valid.
+            </div>
+            <div id="userNotFound" class="mt-3 text-center alert alert-danger" style="display: none;">
+                User not found.
+            </div>
+            <div id="weakPassword" class="mt-3 text-center alert alert-danger" style="display: none;">
+                Weak Password. Couldn't register.
+            </div>
+            <div id="wrongPassword" class="mt-3 text-center alert alert-danger" style="display: none;">
+                Wrong Password.
+            </div>
+            <div id="resetSent" class="mt-3 text-center alert alert-primary" style="display: none;">
+                Password reset sent to your mail.
+            </div>
+            <div id="mailInUse" class="mt-3 text-center alert alert-danger" style="display: none;">
+                E-mail already in use!
+            </div>
+
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
+
+<script>
+
+
+    // AUTHENTICATION
+    // when Login button is clicked - user log in
+    $("#btnLogin").click(function()
+    {
+        var un = $("#txtUn").val();
+        var pw = $("#txtPw").val();
+
+        // sign in operation
+        firebase.auth().signInWithEmailAndPassword(un, pw).then(function(user) {
+            // if successfully logged in
+            $("#loggedIn").slideDown();
+            setTimeout(function()
+            {
+                //$("#loggedIn").slideUp();
+                location.href = "login.html"; // redirect to user's own bookmark page
+            }, 2000);
+        }).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        if (errorCode == "auth/wrong-password") {
+            $("#wrongPassword").slideDown();
+            setTimeout(function()
+            {
+                $("#wrongPassword").slideUp();
+            }, 2000);
+        } else if (errorCode == "auth/user-not-found") {
+            $("#userNotFound").slideDown();
+            setTimeout(function()
+            {
+                $("#userNotFound").slideUp();
+            }, 2000);
+        } else if (errorCode == "auth/invalid-email") {
+            $("#mailNotValidLogin").slideDown();
+            setTimeout(function()
+            {
+                $("#mailNotValidLogin").slideUp();
+            }, 2000);
+        }
+        console.log("error code: " + errorCode);
+        console.log("error message: " + errorMessage);
+        });
+    });
+
+
+
+    // when Register button is clicked - user registiration
+    $("#btnRegister").click(function()
+    {
+        var un = $("#txtUn").val();
+        var pw = $("#txtPw").val();
+
+        firebase.auth().createUserWithEmailAndPassword(un, pw).then(function(user) {
+            // if successfully registered
+            $("#registerSuccess").slideDown();
+            $("#txtUn").val("");
+            $("#txtPw").val("");
+            setTimeout(function()
+            {
+                $("#registerSuccess").slideUp();
+            }, 2000);
+        }).catch(function(error) {
+        // Handling errors
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        
+        if (errorCode == "auth/invalid-email") {
+            $("#mailNotValid").slideDown();
+            setTimeout(function()
+            {
+                $("#mailNotValid").slideUp();
+            }, 2000);
+        } else if (errorCode == "auth/weak-password") {
+            $("#weakPassword").slideDown();
+            setTimeout(function()
+            {
+                $("#weakPassword").slideUp();
+            }, 2000);
+        }else if (errorCode == "auth/email-already-in-use") {
+            $("#mailInUse").slideDown();
+            setTimeout(function()
+            {
+                $("#mailInUse").slideUp();
+            }, 2000);
+        }
+
+        console.log(errorCode);
+
+        });
+    });
+    
+
+    // when Reset Password button is clicked 
+    $("#btnReset").click(function()
+    {
+        var un = $("#txtUn").val();
+        var pw = $("#txtPw").val();
+
+        var auth = firebase.auth();
+        var emailAddress = un;
+
+        auth.sendPasswordResetEmail(emailAddress).then(function() {
+            $("#resetSent").slideDown();
+                setTimeout(function()
+                {
+                    $("#resetSent").slideUp();
+                }, 3000);
+        }).catch(function(error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            if (errorCode == "auth/invalid-email") {
+                $("#userNotFound").slideDown();
+                setTimeout(function()
+                {
+                    $("#userNotFound").slideUp();
+                }, 2000);
+            } else if (errorCode == "auth/user-not-found") {
+                $("#userNotFound").slideDown();
+                setTimeout(function()
+                {
+                    $("#userNotFound").slideUp();
+                }, 2000);
+            }
+
+            
+        });
+    });
+
+
+
+
+    // DATABASE
+    
+
+
+
+</script>
+
